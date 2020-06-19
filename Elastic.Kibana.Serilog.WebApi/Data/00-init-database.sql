@@ -27,9 +27,16 @@ CREATE TABLE Pessoa
 );
 GO
 
-INSERT INTO Pessoa values ('Elvis', '02192319150');
-INSERT INTO Pessoa values ('Joao', '02192319150');
-INSERT INTO Pessoa values ('Maria', '02192319150');
+
+DECLARE 
+    @i INT = 1
+
+while (@i <= 100)
+BEGIN
+     INSERT INTO Pessoa values ('Pessoa ' + CAST(@i as varchar), CAST(@i as varchar));
+
+     SET @i = @i + 1;
+END
 
 INSERT INTO Cidade
 SELECT DISTINCT Localidade, SiglaUf  FROM Correios.dbo.Ceps

@@ -25,7 +25,7 @@ namespace Elastic.Kibana.Serilog.Middleware
             }
             catch (Exception ex)
             {
-                logger.LogCritical(ex, "Erro não tratado, capturado pelo ErrorHandlingMiddleware");
+                logger.LogCritical(ex, $"Erro não tratado, capturado pelo {nameof(ErrorHandlingMiddleware)}");
                 await HandleExceptionAsync(context, ex);
             }
         }

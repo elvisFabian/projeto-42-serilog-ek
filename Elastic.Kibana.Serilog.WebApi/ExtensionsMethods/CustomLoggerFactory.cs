@@ -37,9 +37,6 @@ namespace Elastic.Kibana.Serilog.ExtensionsMethods
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore.ChangeTracking", LogEventLevel.Error)
                 .MinimumLevel.Override("Microsoft.AspNetCore.Server.Kestrel", LogEventLevel.Error)
                 .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
-
-
-
                 .WriteTo.Console()
                 .WriteTo.Elasticsearch(ConfigureElasticSink(environment, configuration))
                 .CreateLogger();
