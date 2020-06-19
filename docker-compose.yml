@@ -1,0 +1,69 @@
+version: '3.6'
+
+services:
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
+        container_name: projeto42-elasticsearch
+        ports:
+            - 9200:9200
+        volumes:
+            - elasticsearch-data:/usr/share/elasticsearch/data
+        environment:
+            - xpack.monitoring.enabled=true
+            - xpack.watcher.enabled=false
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - discovery.type=single-node
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana:7.7.1
+        container_name: projeto42-kibana
+        ports:
+            - 5601:5601
+        depends_on:
+            - elasticsearch
+        environment:
+            - ELASTICSEARCH_URL=http://localhost:9200
+
+    postgres:
+        image: postgres
+        container_name: projeto42-postgres
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: keycloak
+            POSTGRES_USER: keycloak
+            POSTGRES_PASSWORD: password
+
+    keycloak:
+        image: jboss/keycloak
+        container_name: projeto42-keycloak
+        ports:
+            - "8080:8080"
+        environment:
+            DB_VENDOR: POSTGRES
+            DB_ADDR: postgres
+            DB_DATABASE: keycloak
+            DB_USER: keycloak
+            DB_SCHEMA: public
+            DB_PASSWORD: password
+            KEYCLOAK_USER: admin
+            KEYCLOAK_PASSWORD: Pa55w0rd
+        depends_on:
+            - postgres
+
+    mssql:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        container_name: projeto42-mssql
+        restart: unless-stopped
+        ports:
+            - '1435:1433'
+        environment:
+            SA_PASSWORD: '@projeto42'
+            ACCEPT_EULA: 'Y'
+        volumes:
+            - mssql_data:/var/opt/mssql
+
+volumes:
+    elasticsearch-data:
+    postgres_data:
+    mssql_data:
