@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace Elastic.Kibana.Serilog.Middleware
 {
@@ -38,7 +39,14 @@ namespace Elastic.Kibana.Serilog.Middleware
             // else if (ex is MyUnauthorizedException) code = HttpStatusCode.Unauthorized;
             // else if (ex is MyException)             code = HttpStatusCode.BadRequest;
 
-            var result = JsonConvert.SerializeObject(new {error = ex.Message});
+            var errorDetail = ex.Demystify().ToString();
+
+            var result = JsonConvert.SerializeObject(new
+            {
+                Title = "An unexpected error occurred!",
+                Detail = errorDetail,
+            });
+
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int) code;
             return context.Response.WriteAsync(result);

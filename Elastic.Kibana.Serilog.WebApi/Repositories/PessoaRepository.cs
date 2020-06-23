@@ -13,7 +13,7 @@ namespace Elastic.Kibana.Serilog.Dapper
 
         public async Task<IEnumerable<PessoaDto>> GetAll()
         {
-            const string sql = "select * FROM Pessoa as P";
+            const string sql = "select top 1000 * FROM Pessoa as P";
 
             await using var connection = CreateDbConnection();
 
