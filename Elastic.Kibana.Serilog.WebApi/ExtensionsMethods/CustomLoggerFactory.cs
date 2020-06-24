@@ -41,6 +41,11 @@ namespace Elastic.Kibana.Serilog.ExtensionsMethods
                 .MinimumLevel.Override("Microsoft.AspNetCore.Hosting.Diagnostics", LogEventLevel.Error)
                 .MinimumLevel.Override("Microsoft.AspNetCore.Authorization.DefaultAuthorizationService", LogEventLevel.Error)
                 .MinimumLevel.Override("Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler", LogEventLevel.Error)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Infrastructure.ContextInitialized", LogEventLevel.Error)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Infrastructure.SensitiveDataLoggingEnabledWarning", LogEventLevel.Error)
+            
+                
+            
                 .WriteTo.Console()
                 .WriteTo.Elasticsearch(ConfigureElasticSink(environment, configuration))
                 .CreateLogger();

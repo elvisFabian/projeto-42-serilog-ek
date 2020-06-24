@@ -1,6 +1,6 @@
 # [ElasticSearch](https://www.elastic.co/pt/)
 - O Elasticsearch é um mecanismo de busca e análise de dados distribuído e open source para todos os tipos de dados, incluindo textuais, numéricos, geoespaciais, estruturados e não estruturados.
-- Também é uma solucção NoSql
+- Também é uma solução NoSql
 - Tem como base a biblioteca [Lucene](https://github.com/apache/lucene-solr)
 
 # [Kibana](http://localhost:5601/app/kibana)
@@ -9,7 +9,7 @@
 
 # [Serilog](https://serilog.net/)
 - Serilog é uma biblioteca para NetCore que facilita o registro de log.
-- Fornece provedor para log em arquivo, console e outro locais (skins).
+- Fornece provedor para log em arquivo, console e outro locais (Sinks).
 
 # [keycloak](https://www.keycloak.org/)
 - Gerenciamento de acesso e identidade de código aberto
