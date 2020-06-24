@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Elastic.Kibana.Serilog.Dapper;
 using Elastic.Kibana.Serilog.EF;
 using Elastic.Kibana.Serilog.ExtensionsMethods;
@@ -59,11 +60,11 @@ namespace Elastic.Kibana.Serilog
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IHostApplicationLifetime hostApplicationLifetime)
         {
             loggerFactory.AddSerilog(Log.Logger);
-            
+
             //HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms
             app.UseSerilogRequestLogging(opt =>
             {
-                opt.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+                opt.EnrichDiagnosticContext = async (diagnosticContext, httpContext) =>
                 {
                     var user = new LogUserProperties(httpContext);
 
@@ -82,14 +83,13 @@ namespace Elastic.Kibana.Serilog
                 .UseHttpsRedirection()
                 .UseRouting()
                 .UseAuthentication();
-            
+
             app.UseAuthorization();
 
             app
                 .UseMiddleware<ErrorHandlingMiddleware>()
                 .UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            
-           
+
 
             hostApplicationLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
         }

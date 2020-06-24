@@ -9,5 +9,6 @@ namespace Elastic.Kibana.Serilog.Dapper
         Task<IEnumerable<PessoaDto>> GetAll();
         Task<PessoaDto> Get(int id);
         Task<PessoaDto> Get(string nome);
+        Task<bool> Add(PessoaDto pessoa);
     }
 }

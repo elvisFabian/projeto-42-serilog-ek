@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.IO;
 using Serilog.Context;
 
 namespace Elastic.Kibana.Serilog.Middleware
@@ -18,20 +19,20 @@ namespace Elastic.Kibana.Serilog.Middleware
             this.next = next;
         }
 
-        public async Task Invoke(HttpContext context, ILogger<ErrorHandlingMiddleware> logger)
+        public async Task Invoke(HttpContext httpContext, ILogger<ErrorHandlingMiddleware> logger)
         {
             try
             {
-                context.SetUserPropertiesOnLogContext();
-                await next(context);
+                httpContext.SetUserPropertiesOnLogContext();
+                await next(httpContext);
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex, logger);
+                await HandleExceptionAsync(httpContext, ex, logger);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception ex, ILogger<ErrorHandlingMiddleware> logger)
+        private async Task HandleExceptionAsync(HttpContext httpContext, Exception ex, ILogger<ErrorHandlingMiddleware> logger)
         {
             logger.LogCritical(ex, "Erro não tratado, capturado pelo Middleware: {Middleware}", nameof(ErrorHandlingMiddleware));
 
@@ -49,9 +50,9 @@ namespace Elastic.Kibana.Serilog.Middleware
                 Detail = errorDetail,
             });
 
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int) code;
-            return context.Response.WriteAsync(result);
+            httpContext.Response.ContentType = "application/json";
+            httpContext.Response.StatusCode = (int) code;
+            await httpContext.Response.WriteAsync(result);
         }
     }
 }

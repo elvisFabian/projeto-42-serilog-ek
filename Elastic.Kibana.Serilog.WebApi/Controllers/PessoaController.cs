@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Elastic.Kibana.Serilog.Dapper;
 using Elastic.Kibana.Serilog.Dto;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Elastic.Kibana.Serilog.Controllers
 {
@@ -14,10 +16,12 @@ namespace Elastic.Kibana.Serilog.Controllers
     public class PessoaController : ControllerBase
     {
         private readonly IPessoaRepository _pessoaRepository;
+        private readonly ILogger<PessoaController> _logger;
 
-        public PessoaController(IPessoaRepository pessoaRepository)
+        public PessoaController(IPessoaRepository pessoaRepository, ILogger<PessoaController> logger)
         {
             _pessoaRepository = pessoaRepository;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -40,6 +44,16 @@ namespace Elastic.Kibana.Serilog.Controllers
         public async Task<IActionResult> GetByNome(string nome)
         {
             var result = await _pessoaRepository.Get(nome);
+
+            return result.AsHttpResponse();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(PessoaDto pessoa)
+        {
+            _logger.LogBodyInformation(pessoa);
+
+            var result = await _pessoaRepository.Add(pessoa);
 
             return result.AsHttpResponse();
         }

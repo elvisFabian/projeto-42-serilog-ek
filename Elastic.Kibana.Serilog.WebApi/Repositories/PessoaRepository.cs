@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Dapper;
 using Elastic.Kibana.Serilog.Dto;
 
 namespace Elastic.Kibana.Serilog.Dapper
@@ -39,6 +40,16 @@ namespace Elastic.Kibana.Serilog.Dapper
 
             var result = await connection.QueryFirstOrDefaultAsync<PessoaDto>(sql, new {nome});
             return result;
+        }
+
+        public async Task<bool> Add(PessoaDto pessoa)
+        {
+            const string sql = "insert into Pessoa (Nome, Cpf) VALUES (@nome, @cpf)";
+
+            await using var connection = CreateDbConnection();
+
+            var result = await connection.ExecuteAsync(sql, pessoa);
+            return result > 0;
         }
     }
 }

@@ -1,4 +1,7 @@
+using System.IO;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Serilog.Context;
 
 namespace Microsoft.AspNetCore.Http
@@ -8,6 +11,7 @@ namespace Microsoft.AspNetCore.Http
         public const string user_id = "user_id";
         public const string user_name = "user_name";
         public const string user_email = "user_email";
+        public const string body = "{@httpContext_request_body}";
     }
 
     public class LogUserProperties
@@ -42,6 +46,11 @@ namespace Microsoft.AspNetCore.Http
             LogContext.PushProperty(LogConstantes.user_id, user.UserId);
             LogContext.PushProperty(LogConstantes.user_name, user.Name);
             LogContext.PushProperty(LogConstantes.user_email, user.Email);
+        }
+
+        public static void LogBodyInformation<T>(this ILogger logger, T body)
+        {
+            logger.LogInformation(LogConstantes.body, body);
         }
     }
 }
