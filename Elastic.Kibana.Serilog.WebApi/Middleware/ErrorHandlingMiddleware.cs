@@ -23,6 +23,7 @@ namespace Elastic.Kibana.Serilog.Middleware
         {
             try
             {
+                LogContext.PushProperty("RequestMethod", httpContext.Request.Method);
                 httpContext.SetUserPropertiesOnLogContext();
                 await next(httpContext);
             }

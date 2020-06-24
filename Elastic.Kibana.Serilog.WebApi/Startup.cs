@@ -68,6 +68,8 @@ namespace Elastic.Kibana.Serilog
                 {
                     var user = new LogUserProperties(httpContext);
 
+                    diagnosticContext.Set("RequestMethod", httpContext.Request.Method);
+                    
                     diagnosticContext.Set(LogConstantes.user_id, user.UserId);
                     diagnosticContext.Set(LogConstantes.user_name, user.Name);
                     diagnosticContext.Set(LogConstantes.user_email, user.Email);
