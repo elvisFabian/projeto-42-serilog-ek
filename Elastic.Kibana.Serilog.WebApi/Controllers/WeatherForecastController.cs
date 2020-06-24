@@ -29,22 +29,24 @@ namespace Elastic.Kibana.Serilog.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IEnumerable<WeatherForecast> Get()
+        public IActionResult Get()
         {
             _logger.LogInformation("Iniciando consulta de previsão do tempo para todas as cidades");
 
             var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            var result = Enumerable.Range(1, 5).Select(index => new WeatherForecast
                 {
                     Date = DateTime.Now.AddDays(index),
                     TemperatureC = rng.Next(-20, 55),
                     Summary = Summaries[rng.Next(Summaries.Length)]
                 })
                 .ToArray();
+
+            return result.AsHttpResponse();
         }
 
         [HttpGet("{id:int}")]
-        public WeatherForecast Get(int id)
+        public IActionResult Get(int id)
         {
             using (_logger.BeginScope("ScopeId {scopeId}", Guid.NewGuid()))
             {
@@ -62,7 +64,8 @@ namespace Elastic.Kibana.Serilog.Controllers
 
                 _logger.LogInformation("Resultado da previsao do tempo {@weatherForecast}", weatherForecast);
 
-                return weatherForecast;
+
+                return weatherForecast.AsHttpResponse();
             }
         }
 

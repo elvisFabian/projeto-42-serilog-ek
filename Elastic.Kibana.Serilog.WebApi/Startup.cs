@@ -6,6 +6,7 @@ using Elastic.Kibana.Serilog.Middleware;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,9 +41,9 @@ namespace Elastic.Kibana.Serilog
             services.AddSingleton<IDictionary<DatabaseConnectionName, string>>(connectionDict);
             services.AddTransient<IDbConnectionFactory, DapperDbConnectionFactory>();
             services.AddTransient<IPessoaRepository, PessoaRepository>();
-            
+
             services.AddHttpContextAccessor();
-            
+
             services.AddDbContext<Projeto42DbContext>(options => { options.UseSqlServer(projeto42ConnectionString); });
 
             services
@@ -58,6 +59,19 @@ namespace Elastic.Kibana.Serilog
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IHostApplicationLifetime hostApplicationLifetime)
         {
             loggerFactory.AddSerilog(Log.Logger);
+            
+            //HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms
+            app.UseSerilogRequestLogging(opt =>
+            {
+                opt.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+                {
+                    var user = new LogUserProperties(httpContext);
+
+                    diagnosticContext.Set(LogConstantes.user_id, user.UserId);
+                    diagnosticContext.Set(LogConstantes.user_name, user.Name);
+                    diagnosticContext.Set(LogConstantes.user_email, user.Email);
+                };
+            });
 
             if (env.IsDevelopment())
             {
@@ -68,15 +82,14 @@ namespace Elastic.Kibana.Serilog
                 .UseHttpsRedirection()
                 .UseRouting()
                 .UseAuthentication();
-
-            //HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms
-            app.UseSerilogRequestLogging();
-
+            
             app.UseAuthorization();
 
             app
                 .UseMiddleware<ErrorHandlingMiddleware>()
                 .UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            
+           
 
             hostApplicationLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
         }

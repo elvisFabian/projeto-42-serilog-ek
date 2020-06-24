@@ -23,11 +23,21 @@ namespace Elastic.Kibana.Serilog.Dapper
 
         public async Task<PessoaDto> Get(int id)
         {
-            const string sql = "select * FROM Pessoas as P";
+            const string sql = "select * FROM Pessoa as P where id = @id ";
 
             await using var connection = CreateDbConnection();
 
-            var result = await connection.QueryFirstOrDefaultAsync<PessoaDto>(sql);
+            var result = await connection.QueryFirstOrDefaultAsync<PessoaDto>(sql, new {id});
+            return result;
+        }
+
+        public async Task<PessoaDto> Get(string nome)
+        {
+            const string sql = "select * FROM Pessoas as P where nome = @nome ";
+
+            await using var connection = CreateDbConnection();
+
+            var result = await connection.QueryFirstOrDefaultAsync<PessoaDto>(sql, new {nome});
             return result;
         }
     }

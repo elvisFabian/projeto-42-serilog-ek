@@ -19,10 +19,20 @@ namespace Elastic.Kibana.Serilog.Controllers
             _projeto42DbContext = projeto42DbContext;
         }
 
-        [HttpGet("{uf:alpha}")]
-        public IEnumerable<Cidade> GetAll(string uf)
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            return _projeto42DbContext.Cidades.Where(x => x.Uf.Equals(uf)).ToList();
+            var result = _projeto42DbContext.Cidades.OrderBy(x => x.Uf).ThenBy(x => x.Nome).ToList();
+
+            return result.AsHttpResponse();
+        }
+
+        [HttpGet("{uf:alpha}")]
+        public IActionResult GetByUf(string uf)
+        {
+            var result = _projeto42DbContext.Cidades.Where(x => x.Uf.Equals(uf)).OrderBy(x => x.Nome).ToList();
+
+            return result.AsHttpResponse();
         }
     }
 }

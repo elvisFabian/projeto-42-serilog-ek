@@ -21,15 +21,27 @@ namespace Elastic.Kibana.Serilog.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<PessoaDto>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return await _pessoaRepository.GetAll();
+            var result = await _pessoaRepository.GetAll();
+
+            return result.AsHttpResponse();
         }
-        
+
         [HttpGet("{id:int}")]
-        public async Task<PessoaDto> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            return await _pessoaRepository.Get(id);
+            var result = await _pessoaRepository.Get(id);
+
+            return result.AsHttpResponse();
+        }
+
+        [HttpGet("{nome:alpha}")]
+        public async Task<IActionResult> GetByNome(string nome)
+        {
+            var result = await _pessoaRepository.Get(nome);
+
+            return result.AsHttpResponse();
         }
     }
 }

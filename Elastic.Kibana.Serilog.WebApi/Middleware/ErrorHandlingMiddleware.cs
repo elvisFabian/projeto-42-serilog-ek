@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using Serilog.Context;
 
 namespace Elastic.Kibana.Serilog.Middleware
 {
@@ -26,13 +27,14 @@ namespace Elastic.Kibana.Serilog.Middleware
             }
             catch (Exception ex)
             {
-                logger.LogCritical(ex, $"Erro não tratado, capturado pelo {nameof(ErrorHandlingMiddleware)}");
-                await HandleExceptionAsync(context, ex);
+                await HandleExceptionAsync(context, ex, logger);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception ex)
+        private static Task HandleExceptionAsync(HttpContext context, Exception ex, ILogger<ErrorHandlingMiddleware> logger)
         {
+            logger.LogCritical(ex, "Erro não tratado, capturado pelo Middleware: {Middleware}", nameof(ErrorHandlingMiddleware));
+
             var code = HttpStatusCode.InternalServerError;
 
             // if      (ex is MyNotFoundException)     code = HttpStatusCode.NotFound;
